@@ -19,10 +19,11 @@ class knightsTour {
         System.out.println("Board Size: " + boardSize + "x" + boardSize);
         System.out.printf("\n> Press 1 for Blind Search\n> Press 2 for Heuristic Search\n(1 or 2): ");
         int searchChoice = input.nextInt();
+        File file = new File("knightsTour.txt");
 
         switch(searchChoice) {
             case 1: //blind search
-                File file = new File("blindSearch.txt");
+                
                 try {
                     blindSearch knight = new blindSearch();
                     FileWriter output = new FileWriter(file, true);
@@ -34,13 +35,30 @@ class knightsTour {
                     float sec = (endTime - startTime) / 1000F;
                     output.write("\nRuntime: "+sec+"s\n");
                     output.close();
-                    System.out.println("Check blindSearch.txt");
+                    System.out.println("Check knightsTour.txt");
                 } catch (IOException e) {
                     System.out.println("An error occurred.");
                     e.printStackTrace();
                 }
                 break;
-            case 2:
+            case 2: //heuristic search
+                try {
+                    heuristicSearch knight = new heuristicSearch();
+                    FileWriter output = new FileWriter(file, true);
+
+                    long startTime = System.currentTimeMillis();
+                    knight.knightTour(ip, boardSize, output);
+                    long endTime = System.currentTimeMillis();
+                    
+                    float sec = (endTime - startTime) / 1000F;
+                    output.write("\nRuntime: "+sec+"s\n");
+                    output.close();
+                    System.out.println("Check knightsTour.txt");
+                } catch (IOException e) {
+                    System.out.println("An error occurred.");
+                    e.printStackTrace();
+                }
+                break;
             default:
                 System.out.println("Invalid choice.");
         }
