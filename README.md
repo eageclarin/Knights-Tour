@@ -20,3 +20,5 @@ The values can be changed from the main class `knightsTour.java`.
 ## Average Runtime (10 Trials)
 - `Blind Search Algorithm (Depth-first Search)`: Average Runtime: 87.695s
 - `Heuristic Search Algorithm (Wandorf's Rule)`: Average Runtime: 0.024s
+
+This was made for a course subject.
