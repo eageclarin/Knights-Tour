@@ -12,12 +12,14 @@ class coords {
 }
 
 public class blindSearch {
-    private int ii, ij, boardSize;
+    private int boardSize;
     private coords initialPos; //initial position
     private FileWriter output;
 
     private final char[] charCoords = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-    private static final int[][] moves = { {1, -2}, {2, -1}, {2, 1}, {1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2} };
+    //private static final int[][] moves = { {1, -2}, {2, -1}, {2, 1},{1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2} };
+    //private static final int[][] moves = { {1, -2}, {2, -1}, {2, 1},{1, 2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2} };
+    private static final int[][] moves = { {1, -2}, {2, -1}, {2, 1}, {-2, -1}, {1, 2},  {-1, 2}, {-2, 1},  {-1, -2}  };
 
     /* check if within board */
     private boolean withinBoard (coords thisPos) {
@@ -93,46 +95,42 @@ public class blindSearch {
     public boolean findCompletePath (ArrayList<coords[]> completePaths, ArrayList<coords> currentPaths, boolean[][] visited, coords currentPos) throws IOException {
         int i = currentPos.ci; int j = currentPos.cj;
     
-        // if (visited[i][j]) { return; } //skip coordinate
         visited[i][j] = true; //mark visited
         currentPaths.add(currentPos);
 
+        //print initial state
         if (currentPos == initialPos) {
             completePaths.add(currentPaths.toArray( coords[]:: new));
             printBoard(completePaths);
             completePaths.remove(0);
         }
 
+        //get candidatePositions from currentPos
         coords[] candidatePositions = searchPositions(i, j).stream()
             .filter((pos) -> !visited[pos.ci][pos.cj]) //store unvisited coords
             .toArray( coords[]::new );
-        
-        /*
-        boolean deadEnd = false;
-        for (coords candidatePos : candidatePositions) {
-            deadEnd = deadEnd || visited[candidatePos.ci][candidatePos.cj]; //check if deadEnd or one of them is visited
-        }*/
 
         //check if deadEnd and complete
         if (candidatePositions.length == 0 && currentPaths.size() == boardSize * boardSize) { //awan unvisited coords
             completePaths.add(currentPaths.toArray( coords[]::new )); //path clone into array
             return true;
         } else {
-            //search for candidatePos in currentPos
+            //search for a candidatePos in candidatePositions
             for (coords candidatePos: candidatePositions) {
-                //recurse function with candidatePos
+                //recurse function until solution is found
                 if (findCompletePath(completePaths, currentPaths, visited, candidatePos)) 
                     return true;
             }
         }
 
+        //for backtracking
         visited[i][j] = false;
-        currentPaths.remove(currentPaths.size() - 1); //remove recent path
+        currentPaths.remove(currentPaths.size() - 1);
         return false;
     }
 
     /* move knight from initialPos to targetPos */
-    public void moveKnight (coords initialPos) throws IOException {
+    public void moveKnight () throws IOException {
         ArrayList<coords[]> completePaths = new ArrayList<>();
 
         if (findCompletePath(completePaths, new ArrayList<>(), new boolean[boardSize][boardSize], initialPos)) {
@@ -147,18 +145,18 @@ public class blindSearch {
     /* start knight's tour */
     public void knightTour(String ip, int size, FileWriter file) throws IOException {
         boardSize = size; output = file;
-        ii = intEquiv(ip.charAt(0)); //char coord
+        int ii = intEquiv(ip.charAt(0)); //char coord
             if (ii==9) { System.out.printf("\nInvalid position."); return; }
-        ij = Character.getNumericValue(ip.charAt(1)) - 1; //int coord; assigned taret position j
+        int ij = Character.getNumericValue(ip.charAt(1)) - 1; //int coord; assigned taret position j
         initialPos = new coords(ii,ij); //assign coords to targetPos
 
         //check if target position is within board
         if (withinBoard(initialPos)) {
-            //display starting position
+            output.write("\n*****BLIND SEARCH*****\n");
             output.write("\nINITIAL STATE:\n---------------");
 
             //move knight
-            moveKnight(initialPos);
+            moveKnight();
         } else {
             System.out.printf("\nInvalid Position.");
         } 
